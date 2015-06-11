@@ -25,6 +25,8 @@ module.exports = function(grunt) {
 					launch_in_dev: ['PhantomJS'],
 					before_tests: 'grunt jshint',
 					serve_files: [
+						'node_modules/lodash/index.js',
+						'node_modules/jquery/dist/jquery.js',
 						'src/**/*.js',
 						'test/**/*.js',
 						'node_modules/sinon/pkg/sinon.js'
@@ -39,4 +41,5 @@ module.exports = function(grunt) {
 	});
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-testem');
+	grunt.registerTask('default', ['testem:run:unit']);
 };
