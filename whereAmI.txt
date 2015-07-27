@@ -1,4 +1,1 @@
-Page 53
-
-
-tests: grunt testem:run:unit
+Scopes and digest: Coalescing $apply Invocations
