@@ -1,0 +1,13 @@
+_.forEachRight (array)
+goes from right to left through array
+
+array.push(value)
+-add right
+
+array.pop()
+
+array.shift()
+-pops the left most value
+
+array.unshift(value)
+add on the left.

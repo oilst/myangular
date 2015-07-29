@@ -1,0 +1,22 @@
+Scope
+------
+
+$watch: (watchFn, listenerFn, valueEq)
+whenever watchFn(scope) return a new value, listenFn((newValue, newValue, scope)) is called. valueEq decides whether _.isEqual or === is used to compare.
+returns a function that can be called to destroy the watch.
+
+$eval(expr, locals)
+evaluates expr with parameter locals
+
+$apply(expr)
+evaluates exp and calls $digest
+
+$digest
+checks the watchers until no one changed
+
+$evalAsync
+evaluates an expression in the next digest loop. Advantage over timeout is that it does it before it can render stuff or do anything else.
+
+$applyAsync
+evaluates in the next digest loop. In contrast to to $evalAsync it does not evaluate in the current digest cycle.
+
