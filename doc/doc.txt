@@ -1,6 +1,8 @@
 Scope
 ------
 
+dirty checking: watch and digest
+
 $watch: (watchFn, listenerFn, valueEq)
 whenever watchFn(scope) return a new value, listenFn((newValue, newValue, scope)) is called. valueEq decides whether _.isEqual or === is used to compare.
 returns a function that can be called to destroy the watch.
@@ -19,4 +21,12 @@ evaluates an expression in the next digest loop. Advantage over timeout is that 
 
 $applyAsync
 evaluates in the next digest loop. In contrast to to $evalAsync it does not evaluate in the current digest cycle.
+
+$$postDigest
+evaluates functions after the diggest loop
+
+$watchGroup
+Takes an array of watchfunctions and a listener and calls the listener with all old and new values if at least one watch is dirty in the digest loop.
+Returns a destroy function.
+
 

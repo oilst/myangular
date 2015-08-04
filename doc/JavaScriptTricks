@@ -11,3 +11,7 @@ array.shift()
 
 array.unshift(value)
 add on the left.
+
+_.map(array, function(item));
+returns an array of function values.
+

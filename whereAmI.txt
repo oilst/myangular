@@ -1,3 +1,5 @@
 27.7: Scopes and digest: Coalescing $apply Invocations
 
 29.7: Scopes and digest: Watching Several Changes With One Listener:
+
+4.8: Chapter 2: Scope Inheritance
