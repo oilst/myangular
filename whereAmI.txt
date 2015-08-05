@@ -3,3 +3,5 @@
 29.7: Scopes and digest: Watching Several Changes With One Listener:
 
 4.8: Chapter 2: Scope Inheritance
+
+5.8: Digesting The Whole Tree from $apply, $evalAsync, and $applyAsync
