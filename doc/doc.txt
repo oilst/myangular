@@ -11,13 +11,13 @@ $eval(expr, locals)
 evaluates expr with parameter locals
 
 $apply(expr)
-evaluates exp and calls $digest
+evaluates exp and calls $digest on the roots scope and therefore recursively on the whole scope tree.
 
 $digest
 checks the watchers until no one changed
 
 $evalAsync
-evaluates an expression in the next digest loop. Advantage over timeout is that it does it before it can render stuff or do anything else.
+evaluates an expression in the next digest loop. triggers digest on the root scope. Advantage over timeout is that it does it before it can render stuff or do anything else.
 
 $applyAsync
 evaluates in the next digest loop. In contrast to to $evalAsync it does not evaluate in the current digest cycle.
@@ -28,5 +28,15 @@ evaluates functions after the diggest loop
 $watchGroup
 Takes an array of watchfunctions and a listener and calls the listener with all old and new values if at least one watch is dirty in the digest loop.
 Returns a destroy function.
+
+
+Scope inheritance
+-----------------
+$new(isolated, parent): returns a new child scope. with prototypal inheritance. If isolated is true, the child scope is isolated. if parent is defined then parent is the parent of the new scope in the scope hirarchy but it still inherits from the scope on which new is called.
+
+diggest on a scope: diggests all kids recursively but not its parents!
+
+
+
 
 

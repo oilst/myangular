@@ -15,3 +15,5 @@ add on the left.
 _.map(array, function(item));
 returns an array of function values.
 
+C = A || B
+C is A if A is defined and else B.
