@@ -4,8 +4,9 @@
 
 4.8: Chapter 2: Scope Inheritance
 
-5.8: Digesting The Whole Tree from $apply, $evalAsync, and $applyAsync
+5.8:        Digesting The Whole Tree from $apply, $evalAsync, and $applyAsync
 
 12.8: Chapter 3 Watching Collections
 
+17.8        Detecting New Arrays
 

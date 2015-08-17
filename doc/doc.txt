@@ -37,6 +37,12 @@ $new(isolated, parent): returns a new child scope. with prototypal inheritance. 
 diggest on a scope: diggests all kids recursively but not its parents!
 
 
+WatchCollections $$watchCollection(watchFn, listenerFn)
+----------------
+shallow comparison of collections returned by the watch function.
+This is between the reference and the equality watch.
+
+
 
 
 
