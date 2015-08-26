@@ -39,8 +39,11 @@ diggest on a scope: diggests all kids recursively but not its parents!
 
 WatchCollections $$watchCollection(watchFn, listenerFn)
 ----------------
-shallow comparison of collections returned by the watch function.
+shallow comparison of collections and Objects returned by the watch function.
 This is between the reference and the equality watch.
+Implemented using watches and helper functions.
+
+
 
 
 

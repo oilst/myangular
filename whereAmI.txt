@@ -10,3 +10,5 @@
 
 17.8        Detecting New Arrays
 
+23.8        Detecting Removed Attributes in Objects
+

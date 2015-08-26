@@ -5,6 +5,7 @@ array.push(value)
 -add right
 
 array.pop()
+--remove right
 
 array.shift()
 -pops the left most value
@@ -17,3 +18,7 @@ returns an array of function values.
 
 C = A || B
 C is A if A is defined and else B.
+
+_.forOwn (object, function(val, key))
+To iterate over the attributes of an object
+
