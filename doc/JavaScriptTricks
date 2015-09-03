@@ -22,3 +22,14 @@ C is A if A is defined and else B.
 _.forOwn (object, function(val, key))
 To iterate over the attributes of an object
 
+
+_.rest(arguments) returns all arguments but the first.
+
+
+Testing
+------
+_.forEach(['one', 'two'], function(method) { it(...)
+
+methodes one and two can be called by object['one']...
+
+check calls of a jasmine spy: function.calls.mostRecent().args[0].name

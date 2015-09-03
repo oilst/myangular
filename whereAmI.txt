@@ -12,3 +12,4 @@
 
 23.8        Detecting Removed Attributes in Objects
 
+3.9 Chapter 4 scope events: Returning The Event Object

@@ -11,6 +11,7 @@ function Scope() {
     this.$$children = [];
     this.$$phase = null;
     this.$root = this;
+    this.$$listeners = {};
 }
 
 function initWatchVal() {
@@ -260,6 +261,7 @@ Scope.prototype.$new = function (isolated, parent) {
     parent.$$children.push(child);
     child.$$watchers = [];
     child.$$children = [];
+    child.$$listeners = {};
     child.$parent = parent;
     return child;
 };
@@ -279,7 +281,10 @@ Scope.prototype.$watchCollection = function (watchFn, listenerFn) {
     var self = this;
     var newValue;
     var oldValue;
+    var veryOldValue;
+    var trackVeryOldValue = (listenerFn.length > 1);
     var changeCount = 0;
+    var firstRun = true;
 
     var internalWatchFn = function (scope) {
         newValue = watchFn(scope);
@@ -313,6 +318,12 @@ Scope.prototype.$watchCollection = function (watchFn, listenerFn) {
                         oldValue[key] = newVal;
                     }
                 });
+                _.forOwn(oldValue, function (oldVal, key) {
+                    if (!newValue.hasOwnProperty(key)) {
+                        changeCount++;
+                        delete oldValue[key];
+                    }
+                });
             }
         } else {
             if (!self.$$areEqual(newValue, oldValue, false)) {
@@ -324,9 +335,44 @@ Scope.prototype.$watchCollection = function (watchFn, listenerFn) {
     };
 
     var internalListenerFn = function () {
-        listenerFn(newValue, oldValue, self);
+        if (firstRun) {
+            listenerFn(newValue, newValue, self);
+            firstRun = false;
+        } else {
+            listenerFn(newValue, veryOldValue, self);
+        }
+        if (trackVeryOldValue) {
+            veryOldValue = _.clone(newValue);
+        }
     };
     return this.$watch(internalWatchFn, internalListenerFn);
+};
+
+Scope.prototype.$on = function (eventName, listener) {
+    var listeners = this.$$listeners[eventName];
+    if (!listeners) {
+        this.$$listeners[eventName] = listeners = [];
+    }
+    listeners.push(listener);
+};
+
+Scope.prototype.$emit = function (eventName) {
+    var additionalArgs = _.rest(arguments);
+    this.$$fireEventOnScope(eventName, additionalArgs);
+};
+Scope.prototype.$broadcast = function (eventName) {
+    var additionalArgs = _.rest(arguments);
+    this.$$fireEventOnScope(eventName, additionalArgs);
+};
+
+
+Scope.prototype.$$fireEventOnScope = function (eventName, additionalArgs) {
+    var event = {name: eventName};
+    var listenerArgs = [event].concat(additionalArgs);
+    var listeners = this.$$listeners[eventName] || [];
+    _.forEach(listeners, function (listener) {
+        listener.apply(null, listenerArgs);
+    });
 };
 
 
