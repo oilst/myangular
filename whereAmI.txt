@@ -15,3 +15,5 @@
 3.9 Chapter 4 scope events: Returning The Event Object
 
 9.9:        Deregistering Event Listeners
+
+16.9: Part II Expressions And Filters

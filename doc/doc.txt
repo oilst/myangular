@@ -47,9 +47,14 @@ Implemented using watches and helper functions.
 Events
 ------------
 events are passed up and down the scope hirarchy
-$on(event, listener) registers listener for event
+$on(event, listener) registers listener for event, returns a handler to deregister
+
 $broadcast(evenName, arg0, arg1, ... )  calls the event with arguments. the arguments are then used for the listener function. but the first for the listener function is the event object
-$emit
+$emit similar as broadcast. But while broadcast distributes the event down the scope hierarchy, emit distributes up. On emit, a listener can stop the propagation if it calls stopPropagation on the event object.
+
+
+
+
 
 
 
