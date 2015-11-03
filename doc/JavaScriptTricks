@@ -33,3 +33,18 @@ _.forEach(['one', 'two'], function(method) { it(...)
 methodes one and two can be called by object['one']...
 
 check calls of a jasmine spy: function.calls.mostRecent().args[0].name
+
+
+Arrays
+_______
+
+a = [1,2,3,1];
+a.forEach(function(item){})
+
+copy: a.slice();
+
+copy subarray: a.slice(from, (to));
+
+indexOf: a.indexOf(1) // 0
+indexOf: a.indexOf(1,2) // 3 because it starts at index 2 with search
+filter: a.filter(function(element){element === 1}) // [1,1]
