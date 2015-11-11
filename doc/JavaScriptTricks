@@ -48,3 +48,4 @@ copy subarray: a.slice(from, (to));
 indexOf: a.indexOf(1) // 0
 indexOf: a.indexOf(1,2) // 3 because it starts at index 2 with search
 filter: a.filter(function(element){element === 1}) // [1,1]
+join: a.join()

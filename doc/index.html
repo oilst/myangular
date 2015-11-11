@@ -1,0 +1,69 @@
+<!doctype html>
+<html class="no-js">
+<head>
+    <title>AngularJS / Javascript tips and tricks </title>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link href="main.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+<div id="navigation">
+    <h2>The Main navigation</h2>
+    <ul>
+        <li><a href="css.html">CSS</a></li>
+        <li><a href="javascript.html">Java Script</a></li>
+        <li><a href="angular.html">Angular JS</a></li>
+    </ul>
+</div>
+<div id="centerDoc">
+    <h1>CSS</h1>
+    <a href="http://www.csstutorial.net/"> Tutorial from csstutorial.net</a>
+    <p>Syntax: Selector {property:value;}</p>
+    <p> Selectors:
+        <ul>
+            <li>element: p</li>
+            <li>class: .mw-some-class</li>
+            <li>id: #some_id</li>
+            <li>element and class: div.some_class</li>
+        </ul>
+    </p>
+    <p>Stylesheet priority: 1. Inline, 2. Style Sheet, 3. Browser default</p>
+    <p>ID's: IDs should be unique and can be referenced with css.</p>
+
+    <p>padding: 10px 10px 10px 10px /*top right bottom left, wrap arround 10 pixels on each site.*/</p>
+    <p>Marging vs. Padding: Marging is outside, Padding is inside</p>
+    <p>marging auto: horizontally center an element </p>
+    <p>position: absolute; </p>
+    <p>Combinators: Selectors can be combined in the following ways:
+        <ul>
+            <li>descendants: p div</li>
+            <li>child: p > div</li>
+            <li>adjacent siblings: div + p</li>
+            <li>general siblings: div ~ p</li>
+
+        </ul>
+    </p>
+    <p>Preudo classes: <a href="http://www.w3schools.com/css/css_pseudo_classes.asp">Pseudo classes</a></p>
+    <h1>SASS</h1>
+    <p><a href="http://sass-lang.com/documentation"> the sass documentation</a></p>
+    <p> In sass stuff can be nested. i.e. .a { .b {width:10px;}} translates to  .a .b {width:10px;} </p>
+    <p> can be use for pseudo classes: i.e. a { &:hover {color: red;}} translates to a:hover {color: red;}</p>
+    <p> nested propertis: a: {b{color:red;}} translates to a-b {color:red;}</p>
+
+    <div class="class_A">
+        <div class="class_B">
+                Testing nested!
+        </div>
+
+    </div>
+
+    <div class="class_B class_A">
+            Testing on same level!
+    </div>
+
+
+
+</div>
+
+</body>
+</html>
