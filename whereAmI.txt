@@ -27,3 +27,6 @@
 11.11: 236 Assigning Values
 
 ############## skipped 248 - 293 ###############
+
+
+https://github.com/teropa/build-your-own-angularjs
