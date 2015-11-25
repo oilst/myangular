@@ -1,4 +1,7 @@
 'use strict';
+/* jshint globalstrict: true */ /* global parse: false */
+/* global parse: false, register: false , filter: false*/
+
 
 //var _ = require('lodash');
 //var filter = require('./filter').filter;
@@ -713,7 +716,8 @@ ASTCompiler.prototype.compile = function(text) {
         ensureSafeMemberName,
         ensureSafeObject,
         ensureSafeFunction,
-        ifDefined);
+        ifDefined,
+        filter);
     /* jshint +W054 */
     fn.literal = isLiteral(ast);
     fn.constant = ast.constant;

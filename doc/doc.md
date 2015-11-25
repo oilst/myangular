@@ -49,11 +49,21 @@ events are passed up and down the scope hirarchy
 *$emit* similar as broadcast. But while broadcast distributes the event down the scope hierarchy, emit distributes up. On emit, a listener can stop the propagation if it calls stopPropagation on the event object.
 
 
-#Expression
+#Expressions
 always evaluate on scope
 
 
-#Filter
+#Filters
+*Example:* myExpression | uppercase:arg1:arg2
+
+##Filter filter:
+filter an array by:
+- providing a filter function as argument
+- providing a string or a number
+- negating a condition !
+- giving an object criteria (i.e. {name: "ueli"})
+
+
 
 
 
