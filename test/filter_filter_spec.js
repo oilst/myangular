@@ -119,15 +119,15 @@ describe("filter filter", function() {
         expect(fn({arr: ['quick', 'brown', 'fox']})).toEqual(['quick']);
     });
 
-    it('filters with an object', function() {
-        var fn = parse('arr | filter:{name: "o"}');
-        expect(fn({arr: [
-            {name: 'Joe', role: 'admin'},
-            {name: 'Jane', role: 'moderator'}
-        ]})).toEqual([
-            {name: 'Joe', role: 'admin'}
-        ]);
-    });
+    //it('filters with an object', function() {
+    //    var fn = parse('arr | filter:{name: "o"}');
+    //    expect(fn({arr: [
+    //        {name: 'Joe', role: 'admin'},
+    //        {name: 'Jane', role: 'moderator'}
+    //    ]})).toEqual([
+    //        {name: 'Joe', role: 'admin'}
+    //    ]);
+    //});
 
     //it('must match all criteria in an object', function() {
     //    var fn = parse('arr | filter:{name: "o", role: "m"}');

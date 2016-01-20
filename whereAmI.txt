@@ -31,4 +31,10 @@
 25.11: 318 Filtering With Object Criteria
 
 
+############## skipped 318 - 333 ###############
+
+1.12: 397
+
+
+
 https://github.com/teropa/build-your-own-angularjs

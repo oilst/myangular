@@ -50,11 +50,18 @@ events are passed up and down the scope hirarchy
 
 
 #Expressions
-always evaluate on scope
+-always evaluate on scope
+-you can also assign something to an expression on a scope. i.e. if expr = 'a.b', then expr.assign(scope, 10) assigns 10 to scope.a.b
+-when evaluated, special delegates for usage in $watch can be attached: $$watchDelegate. 
+    --For example for '{{::aValue}}' the oneTimeLiteralWatchDelegate is attached. It removes the watch as soon as the value is stable. For constants, the watch is removed after the first digest cycle. 
+    --For arrays oder expressions with several variables, a delegate is attached that only evaulates if one of the variables chaged.
+
 
 
 #Filters
 *Example:* myExpression | uppercase:arg1:arg2
+register a filter function $filterProvider.register(function (){}, {$stateful: true})
+If the $stateful=true option is passed, the filter is seen as statefull and dirty checked even if the inputs do not change. 
 
 ##Filter filter:
 filter an array by:
@@ -62,6 +69,8 @@ filter an array by:
 - providing a string or a number
 - negating a condition !
 - giving an object criteria (i.e. {name: "ueli"})
+- filter if any property contains an 'o': arr | filter:{$: "o"} or even: arr | filter:{name: {$: "o"}}
+
 
 
 
