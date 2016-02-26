@@ -35,6 +35,12 @@
 
 1.12: 397
 
+19.1.16: 420
+
+26.1.16: 429
+
+25.2.16: 455
+
 
 
 https://github.com/teropa/build-your-own-angularjs

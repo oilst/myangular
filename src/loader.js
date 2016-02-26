@@ -13,12 +13,19 @@ function setupModuleLoader(window) {
             throw 'hasOwnProperty is not a valid module name';
         }
         var invokeQueue = [];
+
+        var invokeLater = function (method, arrayMethode) {
+            return function () {
+                invokeQueue[arrayMethod || 'push']([method, arguments]);
+                return moduleInstance;
+            };
+        };
+
         var moduleInstance = {
             name: name,
             requires: requires,
-            constant: function(key, value){
-                invokeQueue.push(['constant', [key, value]]);
-            },
+            constant: invokeLater('constant', 'unshift'),
+            provider: invokeLater('provider'),
             _invokeQueue: invokeQueue
         };
         modules[name] = moduleInstance;
@@ -41,7 +48,7 @@ function setupModuleLoader(window) {
         if (modules.hasOwnProperty(name)) {
             return modules[name];
         } else {
-            throw 'Module '+name+ 'is not available!';
+            throw 'Module ' + name + 'is not available!';
         }
     };
 }

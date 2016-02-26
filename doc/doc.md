@@ -73,24 +73,26 @@ filter an array by:
 
 ##Loader and Injector
 The loader has the following job:
--register modules
--organize modules
+- register modules: `var module = angular.module('myModule', []);`
+- organize modules
+- lookup moduules
 
 #Modules 
 Modules contain services that can be invokes. 
 
 #Injector
-Fetches the modules from the Loader and invokes their services. 
+Fetches the modules from the Loader and invokes their services. It also instantiates modules if needed.
 
 #Dependency Injection
 example:
-module.constant('a', 1);
-module.constant('b', 2);
-fn.$inject = ['a', 'b'];
-injector.invoke(fn);
+`module.constant('a', 1);`
+`module.constant('b', 2);`
+`fn.$inject = ['a', 'b'];`
+`injector.invoke(fn);`
 
 The injector resolves dependency 'a' and invokes the function with its values. 
 injector.annotate(fn) resolves the dependecies for a function. This can be deduced from fn.$inject or simply by parsing the function source codes and scanning the parameters. 
+
 
 
 
