@@ -41,6 +41,7 @@
 
 25.2.16: 455
 
+9.3.16: 478
 
 
 https://github.com/teropa/build-your-own-angularjs
