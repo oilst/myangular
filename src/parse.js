@@ -6,7 +6,7 @@
 //var _ = require('lodash');
 //var filter = require('./filter').filter;
 
-var ESCAPES = {'n':'\n', 'f':'\f', 'r':'\r', 't':'\t', 'v':'\v', '\'':'\'', '"':'"'};
+var ESCAPES = {'n': '\n', 'f': '\f', 'r': '\r', 't': '\t', 'v': '\v', '\'': '\'', '"': '"'};
 
 var OPERATORS = {
     '+': true,
@@ -84,7 +84,7 @@ function isLiteral(ast) {
 function Lexer() {
 }
 
-Lexer.prototype.lex = function(text) {
+Lexer.prototype.lex = function (text) {
     this.text = text;
     this.index = 0;
     this.ch = undefined;
@@ -118,7 +118,7 @@ Lexer.prototype.lex = function(text) {
                 this.tokens.push({text: token});
                 this.index += token.length;
             } else {
-                throw 'Unexpected next character: '+this.ch;
+                throw 'Unexpected next character: ' + this.ch;
             }
         }
     }
@@ -126,25 +126,25 @@ Lexer.prototype.lex = function(text) {
     return this.tokens;
 };
 
-Lexer.prototype.is = function(chs) {
+Lexer.prototype.is = function (chs) {
     return chs.indexOf(this.ch) >= 0;
 };
-Lexer.prototype.isNumber = function(ch) {
+Lexer.prototype.isNumber = function (ch) {
     return '0' <= ch && ch <= '9';
 };
-Lexer.prototype.isExpOperator = function(ch) {
+Lexer.prototype.isExpOperator = function (ch) {
     return ch === '-' || ch === '+' || this.isNumber(ch);
 };
-Lexer.prototype.isIdent = function(ch) {
+Lexer.prototype.isIdent = function (ch) {
     return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') ||
         ch === '_' || ch === '$';
 };
-Lexer.prototype.isWhitespace = function(ch) {
+Lexer.prototype.isWhitespace = function (ch) {
     return ch === ' ' || ch === '\r' || ch === '\t' ||
         ch === '\n' || ch === '\v' || ch === '\u00A0';
 };
 
-Lexer.prototype.readNumber = function() {
+Lexer.prototype.readNumber = function () {
     var number = '';
     while (this.index < this.text.length) {
         var ch = this.text.charAt(this.index).toLowerCase();
@@ -174,7 +174,7 @@ Lexer.prototype.readNumber = function() {
     });
 };
 
-Lexer.prototype.readString = function(quote) {
+Lexer.prototype.readString = function (quote) {
     this.index++;
     var string = '';
     var rawString = quote;
@@ -215,7 +215,7 @@ Lexer.prototype.readString = function(quote) {
     }
 };
 
-Lexer.prototype.readIdent = function() {
+Lexer.prototype.readIdent = function () {
     var text = '';
     while (this.index < this.text.length) {
         var ch = this.text.charAt(this.index);
@@ -235,7 +235,7 @@ Lexer.prototype.readIdent = function() {
     this.tokens.push(token);
 };
 
-Lexer.prototype.peek = function(n) {
+Lexer.prototype.peek = function (n) {
     n = n || 1;
     return this.index + n < this.text.length ?
         this.text.charAt(this.index + n) :
@@ -261,11 +261,11 @@ AST.BinaryExpression = 'BinaryExpression';
 AST.LogicalExpression = 'LogicalExpression';
 AST.ConditionalExpression = 'ConditionalExpression';
 
-AST.prototype.ast = function(text) {
+AST.prototype.ast = function (text) {
     this.tokens = this.lexer.lex(text);
     return this.program();
 };
-AST.prototype.program = function() {
+AST.prototype.program = function () {
     var body = [];
     while (true) {
         if (this.tokens.length) {
@@ -276,7 +276,7 @@ AST.prototype.program = function() {
         }
     }
 };
-AST.prototype.filter = function() {
+AST.prototype.filter = function () {
     var left = this.assignment();
     while (this.expect('|')) {
         var args = [left];
@@ -292,7 +292,7 @@ AST.prototype.filter = function() {
     }
     return left;
 };
-AST.prototype.assignment = function() {
+AST.prototype.assignment = function () {
     var left = this.ternary();
     if (this.expect('=')) {
         var right = this.ternary();
@@ -300,7 +300,7 @@ AST.prototype.assignment = function() {
     }
     return left;
 };
-AST.prototype.ternary = function() {
+AST.prototype.ternary = function () {
     var test = this.logicalOR();
     if (this.expect('?')) {
         var consequent = this.assignment();
@@ -316,7 +316,7 @@ AST.prototype.ternary = function() {
     }
     return test;
 };
-AST.prototype.logicalOR = function() {
+AST.prototype.logicalOR = function () {
     var left = this.logicalAND();
     var token;
     while ((token = this.expect('||'))) {
@@ -329,7 +329,7 @@ AST.prototype.logicalOR = function() {
     }
     return left;
 };
-AST.prototype.logicalAND = function() {
+AST.prototype.logicalAND = function () {
     var left = this.equality();
     var token;
     while ((token = this.expect('&&'))) {
@@ -342,7 +342,7 @@ AST.prototype.logicalAND = function() {
     }
     return left;
 };
-AST.prototype.equality = function() {
+AST.prototype.equality = function () {
     var left = this.relational();
     var token;
     while ((token = this.expect('==', '!=', '===', '!=='))) {
@@ -355,7 +355,7 @@ AST.prototype.equality = function() {
     }
     return left;
 };
-AST.prototype.relational = function() {
+AST.prototype.relational = function () {
     var left = this.additive();
     var token;
     while ((token = this.expect('<', '>', '<=', '>='))) {
@@ -368,7 +368,7 @@ AST.prototype.relational = function() {
     }
     return left;
 };
-AST.prototype.additive = function() {
+AST.prototype.additive = function () {
     var left = this.multiplicative();
     var token;
     while ((token = this.expect('+')) || (token = this.expect('-'))) {
@@ -381,7 +381,7 @@ AST.prototype.additive = function() {
     }
     return left;
 };
-AST.prototype.multiplicative = function() {
+AST.prototype.multiplicative = function () {
     var left = this.unary();
     var token;
     while ((token = this.expect('*', '/', '%'))) {
@@ -394,7 +394,7 @@ AST.prototype.multiplicative = function() {
     }
     return left;
 };
-AST.prototype.unary = function() {
+AST.prototype.unary = function () {
     var token;
     if ((token = this.expect('+', '!', '-'))) {
         return {
@@ -406,7 +406,7 @@ AST.prototype.unary = function() {
         return this.primary();
     }
 };
-AST.prototype.primary = function() {
+AST.prototype.primary = function () {
     var primary;
     if (this.expect('(')) {
         primary = this.filter();
@@ -450,7 +450,7 @@ AST.prototype.primary = function() {
     }
     return primary;
 };
-AST.prototype.arrayDeclaration = function() {
+AST.prototype.arrayDeclaration = function () {
     var elements = [];
     if (!this.peek(']')) {
         do {
@@ -463,7 +463,7 @@ AST.prototype.arrayDeclaration = function() {
     this.consume(']');
     return {type: AST.ArrayExpression, elements: elements};
 };
-AST.prototype.object = function() {
+AST.prototype.object = function () {
     var properties = [];
     if (!this.peek('}')) {
         do {
@@ -481,7 +481,7 @@ AST.prototype.object = function() {
     this.consume('}');
     return {type: AST.ObjectExpression, properties: properties};
 };
-AST.prototype.parseArguments = function() {
+AST.prototype.parseArguments = function () {
     var args = [];
     if (!this.peek(')')) {
         do {
@@ -490,19 +490,19 @@ AST.prototype.parseArguments = function() {
     }
     return args;
 };
-AST.prototype.identifier = function() {
+AST.prototype.identifier = function () {
     return {type: AST.Identifier, name: this.consume().text};
 };
-AST.prototype.constant = function() {
+AST.prototype.constant = function () {
     return {type: AST.Literal, value: this.consume().value};
 };
-AST.prototype.expect = function(e1, e2, e3, e4) {
+AST.prototype.expect = function (e1, e2, e3, e4) {
     var token = this.peek(e1, e2, e3, e4);
     if (token) {
         return this.tokens.shift();
     }
 };
-AST.prototype.peek = function(e1, e2, e3, e4) {
+AST.prototype.peek = function (e1, e2, e3, e4) {
     if (this.tokens.length > 0) {
         var text = this.tokens[0].text;
         if (text === e1 || text === e2 || text === e3 || text === e4 ||
@@ -511,7 +511,7 @@ AST.prototype.peek = function(e1, e2, e3, e4) {
         }
     }
 };
-AST.prototype.consume = function(e) {
+AST.prototype.consume = function (e) {
     var token = this.expect(e);
     if (!token) {
         throw 'Unexpected. Expecting: ' + e;
@@ -525,14 +525,14 @@ AST.prototype.constants = {
     'this': {type: AST.ThisExpression}
 };
 
-function markConstantAndWatchExpressions(ast) {
+function markConstantAndWatchExpressions(ast, $filter) {
     var allConstants;
     var argsToWatch;
     switch (ast.type) {
         case AST.Program:
             allConstants = true;
-            _.forEach(ast.body, function(expr) {
-                markConstantAndWatchExpressions(expr);
+            _.forEach(ast.body, function (expr) {
+                markConstantAndWatchExpressions(expr, $filter);
                 allConstants = allConstants && expr.constant;
             });
             ast.constant = allConstants;
@@ -548,8 +548,8 @@ function markConstantAndWatchExpressions(ast) {
         case AST.ArrayExpression:
             allConstants = true;
             argsToWatch = [];
-            _.forEach(ast.elements, function(element) {
-                markConstantAndWatchExpressions(element);
+            _.forEach(ast.elements, function (element) {
+                markConstantAndWatchExpressions(element, $filter);
                 allConstants = allConstants && element.constant;
                 if (!element.constant) {
                     argsToWatch.push.apply(argsToWatch, element.toWatch);
@@ -561,8 +561,8 @@ function markConstantAndWatchExpressions(ast) {
         case AST.ObjectExpression:
             allConstants = true;
             argsToWatch = [];
-            _.forEach(ast.properties, function(property) {
-                markConstantAndWatchExpressions(property.value);
+            _.forEach(ast.properties, function (property) {
+                markConstantAndWatchExpressions(property.value, $filter);
                 allConstants = allConstants && property.value.constant;
                 if (!property.value.constant) {
                     argsToWatch.push.apply(argsToWatch, property.value.toWatch);
@@ -576,20 +576,20 @@ function markConstantAndWatchExpressions(ast) {
             ast.toWatch = [];
             break;
         case AST.MemberExpression:
-            markConstantAndWatchExpressions(ast.object);
+            markConstantAndWatchExpressions(ast.object, $filter);
             if (ast.computed) {
-                markConstantAndWatchExpressions(ast.property);
+                markConstantAndWatchExpressions(ast.property, $filter);
             }
             ast.constant = ast.object.constant &&
                 (!ast.computed || ast.property.constant);
             ast.toWatch = [ast];
             break;
         case AST.CallExpression:
-            var stateless = ast.filter && !filter(ast.callee.name).$stateful;
+            var stateless = ast.filter && !$filter(ast.callee.name).$stateful;
             allConstants = stateless ? true : false;
             argsToWatch = [];
-            _.forEach(ast.arguments, function(arg) {
-                markConstantAndWatchExpressions(arg);
+            _.forEach(ast.arguments, function (arg) {
+                markConstantAndWatchExpressions(arg, $filter);
                 allConstants = allConstants && arg.constant;
                 if (!arg.constant) {
                     argsToWatch.push.apply(argsToWatch, arg.toWatch);
@@ -599,32 +599,32 @@ function markConstantAndWatchExpressions(ast) {
             ast.toWatch = stateless ? argsToWatch : [ast];
             break;
         case AST.AssignmentExpression:
-            markConstantAndWatchExpressions(ast.left);
-            markConstantAndWatchExpressions(ast.right);
+            markConstantAndWatchExpressions(ast.left, $filter);
+            markConstantAndWatchExpressions(ast.right, $filter);
             ast.constant = ast.left.constant && ast.right.constant;
             ast.toWatch = [ast];
             break;
         case AST.UnaryExpression:
-            markConstantAndWatchExpressions(ast.argument);
+            markConstantAndWatchExpressions(ast.argument, $filter);
             ast.constant = ast.argument.constant;
             ast.toWatch = ast.argument.toWatch;
             break;
         case AST.BinaryExpression:
-            markConstantAndWatchExpressions(ast.left);
-            markConstantAndWatchExpressions(ast.right);
+            markConstantAndWatchExpressions(ast.left, $filter);
+            markConstantAndWatchExpressions(ast.right, $filter);
             ast.constant = ast.left.constant && ast.right.constant;
             ast.toWatch = ast.left.toWatch.concat(ast.right.toWatch);
             break;
         case AST.LogicalExpression:
-            markConstantAndWatchExpressions(ast.left);
-            markConstantAndWatchExpressions(ast.right);
+            markConstantAndWatchExpressions(ast.left, $filter);
+            markConstantAndWatchExpressions(ast.right, $filter);
             ast.constant = ast.left.constant && ast.right.constant;
             ast.toWatch = [ast];
             break;
         case AST.ConditionalExpression:
-            markConstantAndWatchExpressions(ast.test);
-            markConstantAndWatchExpressions(ast.consequent);
-            markConstantAndWatchExpressions(ast.alternate);
+            markConstantAndWatchExpressions(ast.test, $filter);
+            markConstantAndWatchExpressions(ast.consequent, $filter);
+            markConstantAndWatchExpressions(ast.alternate, $filter);
             ast.constant =
                 ast.test.constant && ast.consequent.constant && ast.alternate.constant;
             ast.toWatch = [ast];
@@ -655,14 +655,15 @@ function assignableAST(ast) {
     }
 }
 
-function ASTCompiler(astBuilder) {
+function ASTCompiler(astBuilder, $filter) {
     this.astBuilder = astBuilder;
+    this.$filter = $filter;
 }
 
-ASTCompiler.prototype.compile = function(text) {
+ASTCompiler.prototype.compile = function (text) {
     var ast = this.astBuilder.ast(text);
     var extra = '';
-    markConstantAndWatchExpressions(ast);
+    markConstantAndWatchExpressions(ast, this.$filter);
     this.state = {
         nextId: 0,
         fn: {body: [], vars: []},
@@ -671,7 +672,7 @@ ASTCompiler.prototype.compile = function(text) {
         inputs: []
     };
     this.stage = 'inputs';
-    _.forEach(getInputs(ast.body), function(input, idx) {
+    _.forEach(getInputs(ast.body), function (input, idx) {
         var inputKey = 'fn' + idx;
         this.state[inputKey] = {body: [], vars: []};
         this.state.computing = inputKey;
@@ -717,15 +718,15 @@ ASTCompiler.prototype.compile = function(text) {
         ensureSafeObject,
         ensureSafeFunction,
         ifDefined,
-        filter);
+        this.$filter);
     /* jshint +W054 */
     fn.literal = isLiteral(ast);
     fn.constant = ast.constant;
     return fn;
 };
-ASTCompiler.prototype.watchFns = function() {
+ASTCompiler.prototype.watchFns = function () {
     var result = [];
-    _.forEach(this.state.inputs, function(inputName) {
+    _.forEach(this.state.inputs, function (inputName) {
         result.push('var ', inputName, '=function(s) {',
             (this.state[inputName].vars.length ?
                 'var ' + this.state[inputName].vars.join(',') + ';' :
@@ -739,11 +740,11 @@ ASTCompiler.prototype.watchFns = function() {
     }
     return result.join('');
 };
-ASTCompiler.prototype.recurse = function(ast, context, create) {
+ASTCompiler.prototype.recurse = function (ast, context, create) {
     var intoId;
     switch (ast.type) {
         case AST.Program:
-            _.forEach(_.initial(ast.body), function(stmt) {
+            _.forEach(_.initial(ast.body), function (stmt) {
                 this.state[this.state.computing].body.push(this.recurse(stmt), ';');
             }, this);
             this.state[this.state.computing].body.push(
@@ -752,12 +753,12 @@ ASTCompiler.prototype.recurse = function(ast, context, create) {
         case AST.Literal:
             return this.escape(ast.value);
         case AST.ArrayExpression:
-            var elements = _.map(ast.elements, function(element) {
+            var elements = _.map(ast.elements, function (element) {
                 return this.recurse(element);
             }, this);
             return '[' + elements.join(',') + ']';
         case AST.ObjectExpression:
-            var properties = _.map(ast.properties, function(property) {
+            var properties = _.map(ast.properties, function (property) {
                 var key = property.key.type === AST.Identifier ?
                     property.key.name :
                     this.escape(property.key.value);
@@ -832,14 +833,14 @@ ASTCompiler.prototype.recurse = function(ast, context, create) {
             var callContext, callee, args;
             if (ast.filter) {
                 callee = this.filter(ast.callee.name);
-                args = _.map(ast.arguments, function(arg) {
+                args = _.map(ast.arguments, function (arg) {
                     return this.recurse(arg);
                 }, this);
                 return callee + '(' + args + ')';
             } else {
                 callContext = {};
                 callee = this.recurse(ast.callee, callContext);
-                args = _.map(ast.arguments, function(arg) {
+                args = _.map(ast.arguments, function (arg) {
                     return 'ensureSafeObject(' + this.recurse(arg) + ')';
                 }, this);
                 if (callContext.name) {
@@ -901,48 +902,48 @@ ASTCompiler.prototype.recurse = function(ast, context, create) {
     }
 };
 
-ASTCompiler.prototype.nextId = function(skip) {
+ASTCompiler.prototype.nextId = function (skip) {
     var id = 'v' + (this.state.nextId++);
     if (!skip) {
         this.state[this.state.computing].vars.push(id);
     }
     return id;
 };
-ASTCompiler.prototype.not = function(e) {
+ASTCompiler.prototype.not = function (e) {
     return '!(' + e + ')';
 };
-ASTCompiler.prototype.nonComputedMember = function(left, right) {
+ASTCompiler.prototype.nonComputedMember = function (left, right) {
     return '(' + left + ').' + right;
 };
-ASTCompiler.prototype.computedMember = function(left, right) {
+ASTCompiler.prototype.computedMember = function (left, right) {
     return '(' + left + ')[' + right + ']';
 };
-ASTCompiler.prototype.getHasOwnProperty = function(object, property) {
+ASTCompiler.prototype.getHasOwnProperty = function (object, property) {
     return object + '&&(' + this.escape(property) + ' in ' + object + ')';
 };
-ASTCompiler.prototype.if_ = function(test, consequent) {
+ASTCompiler.prototype.if_ = function (test, consequent) {
     this.state[this.state.computing].body.push(
         'if(', test, '){', consequent, '}');
 };
-ASTCompiler.prototype.assign = function(id, value) {
+ASTCompiler.prototype.assign = function (id, value) {
     return id + '=' + value + ';';
 };
-ASTCompiler.prototype.addEnsureSafeMemberName = function(expr) {
+ASTCompiler.prototype.addEnsureSafeMemberName = function (expr) {
     this.state[this.state.computing].body.push(
         'ensureSafeMemberName(' + expr + ');');
 };
-ASTCompiler.prototype.addEnsureSafeObject = function(expr) {
+ASTCompiler.prototype.addEnsureSafeObject = function (expr) {
     this.state[this.state.computing].body.push(
         'ensureSafeObject(' + expr + ');');
 };
-ASTCompiler.prototype.addEnsureSafeFunction = function(expr) {
+ASTCompiler.prototype.addEnsureSafeFunction = function (expr) {
     this.state[this.state.computing].body.push(
         'ensureSafeFunction(' + expr + ');');
 };
-ASTCompiler.prototype.ifDefined = function(value, defaultValue) {
+ASTCompiler.prototype.ifDefined = function (value, defaultValue) {
     return 'ifDefined(' + value + ',' + this.escape(defaultValue) + ')';
 };
-ASTCompiler.prototype.filter = function(name) {
+ASTCompiler.prototype.filter = function (name) {
     if (!this.state.filters.hasOwnProperty(name)) {
         this.state.filters[name] = this.nextId(true);
     }
@@ -950,10 +951,10 @@ ASTCompiler.prototype.filter = function(name) {
 };
 
 ASTCompiler.prototype.stringEscapeRegex = /[^ a-zA-Z0-9]/g;
-ASTCompiler.prototype.stringEscapeFn = function(c) {
+ASTCompiler.prototype.stringEscapeFn = function (c) {
     return '\\u' + ('0000' + c.charCodeAt(0).toString(16)).slice(-4);
 };
-ASTCompiler.prototype.escape = function(value) {
+ASTCompiler.prototype.escape = function (value) {
     if (_.isString(value)) {
         return '\'' + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + '\'';
     } else if (_.isNull(value)) {
@@ -963,33 +964,33 @@ ASTCompiler.prototype.escape = function(value) {
     }
 };
 
-ASTCompiler.prototype.filterPrefix = function() {
+ASTCompiler.prototype.filterPrefix = function () {
     if (_.isEmpty(this.state.filters)) {
         return '';
     } else {
-        var parts = _.map(this.state.filters, function(varName, filterName) {
+        var parts = _.map(this.state.filters, function (varName, filterName) {
             return varName + '=' + 'filter(' + this.escape(filterName) + ')';
         }, this);
         return 'var ' + parts.join(',') + ';';
     }
 };
 
-function Parser(lexer) {
+function Parser(lexer, $filter) {
     this.lexer = lexer;
     this.ast = new AST(this.lexer);
-    this.astCompiler = new ASTCompiler(this.ast);
+    this.astCompiler = new ASTCompiler(this.ast, $filter);
 }
 
-Parser.prototype.parse = function(text) {
+Parser.prototype.parse = function (text) {
     return this.astCompiler.compile(text);
 };
 
 function constantWatchDelegate(scope, listenerFn, valueEq, watchFn) {
     var unwatch = scope.$watch(
-        function() {
+        function () {
             return watchFn(scope);
         },
-        function(newValue, oldValue, scope) {
+        function (newValue, oldValue, scope) {
             if (_.isFunction(listenerFn)) {
                 listenerFn.apply(this, arguments);
             }
@@ -1003,15 +1004,15 @@ function constantWatchDelegate(scope, listenerFn, valueEq, watchFn) {
 function oneTimeWatchDelegate(scope, listenerFn, valueEq, watchFn) {
     var lastValue;
     var unwatch = scope.$watch(
-        function() {
+        function () {
             return watchFn(scope);
-        }, function(newValue, oldValue, scope) {
+        }, function (newValue, oldValue, scope) {
             lastValue = newValue;
             if (_.isFunction(listenerFn)) {
                 listenerFn.apply(this, arguments);
             }
             if (!_.isUndefined(newValue)) {
-                scope.$$postDigest(function() {
+                scope.$$postDigest(function () {
                     if (!_.isUndefined(lastValue)) {
                         unwatch();
                     }
@@ -1026,15 +1027,16 @@ function oneTimeLiteralWatchDelegate(scope, listenerFn, valueEq, watchFn) {
     function isAllDefined(val) {
         return !_.any(val, _.isUndefined);
     }
+
     var unwatch = scope.$watch(
-        function() {
+        function () {
             return watchFn(scope);
-        }, function(newValue, oldValue, scope) {
+        }, function (newValue, oldValue, scope) {
             if (_.isFunction(listenerFn)) {
                 listenerFn.apply(this, arguments);
             }
             if (isAllDefined(newValue)) {
-                scope.$$postDigest(function() {
+                scope.$$postDigest(function () {
                     if (isAllDefined(newValue)) {
                         unwatch();
                     }
@@ -1054,12 +1056,13 @@ function expressionInputDirtyCheck(newValue, oldValue) {
 function inputsWatchDelegate(scope, listenerFn, valueEq, watchFn) {
     var inputExpressions = watchFn.inputs;
 
-    var oldValues = _.times(inputExpressions.length, _.constant(function() { }));
+    var oldValues = _.times(inputExpressions.length, _.constant(function () {
+    }));
     var lastResult;
 
-    return scope.$watch(function() {
+    return scope.$watch(function () {
         var changed = false;
-        _.forEach(inputExpressions, function(inputExpr, i) {
+        _.forEach(inputExpressions, function (inputExpr, i) {
             var newValue = inputExpr(scope);
             if (changed || !expressionInputDirtyCheck(newValue, oldValues[i])) {
                 changed = true;
@@ -1073,31 +1076,36 @@ function inputsWatchDelegate(scope, listenerFn, valueEq, watchFn) {
     }, listenerFn, valueEq);
 }
 
-function parse(expr) {
-    switch (typeof expr) {
-        case 'string':
-            var lexer = new Lexer();
-            var parser = new Parser(lexer);
-            var oneTime = false;
-            if (expr.charAt(0) === ':' && expr.charAt(1) === ':') {
-                oneTime = true;
-                expr = expr.substring(2);
+
+function $ParseProvider() {
+    this.$get = ['$filter', function ($filter) {
+        return function (expr) {
+            switch (typeof expr) {
+                case 'string':
+                    var lexer = new Lexer();
+                    var parser = new Parser(lexer, $filter);
+                    var oneTime = false;
+                    if (expr.charAt(0) === ':' && expr.charAt(1) === ':') {
+                        oneTime = true;
+                        expr = expr.substring(2);
+                    }
+                    var parseFn = parser.parse(expr);
+                    if (parseFn.constant) {
+                        parseFn.$$watchDelegate = constantWatchDelegate;
+                    } else if (oneTime) {
+                        parseFn.$$watchDelegate = parseFn.literal ? oneTimeLiteralWatchDelegate :
+                            oneTimeWatchDelegate;
+                    } else if (parseFn.inputs) {
+                        parseFn.$$watchDelegate = inputsWatchDelegate;
+                    }
+                    return parseFn;
+                case 'function':
+                    return expr;
+                default:
+                    return _.noop;
             }
-            var parseFn = parser.parse(expr);
-            if (parseFn.constant) {
-                parseFn.$$watchDelegate = constantWatchDelegate;
-            } else if (oneTime) {
-                parseFn.$$watchDelegate = parseFn.literal ? oneTimeLiteralWatchDelegate :
-                    oneTimeWatchDelegate;
-            } else if (parseFn.inputs) {
-                parseFn.$$watchDelegate = inputsWatchDelegate;
-            }
-            return parseFn;
-        case 'function':
-            return expr;
-        default:
-            return _.noop;
-    }
+        };
+    }];
 }
 
 //module.exports = parse;

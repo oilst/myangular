@@ -1,8 +1,13 @@
-/* jshint globalstrict: true */ /* global parse: false */
-/* global parse: false, register: false , filter: false*/
+/* jshint globalstrict: true */
+/* global publishExternalAPI: false, createInjector: false */
 'use strict';
 
 describe("parse", function () {
+    var parse;
+    beforeEach(function () {
+        publishExternalAPI();
+        parse = createInjector(['ng']).get('$parse');
+    });
     it("can parse an integer", function () {
         var fn = parse('42');
         expect(fn).toBeDefined();
@@ -135,39 +140,37 @@ describe("parse", function () {
     });
 
 
-
-
-    it('looks up an attribute from the scope', function() {
+    it('looks up an attribute from the scope', function () {
         var fn = parse('aKey');
         expect(fn({aKey: 42})).toBe(42);
         expect(fn({})).toBeUndefined();
     });
 
-    it('returns undefined when looking up attribute from undefined', function() {
+    it('returns undefined when looking up attribute from undefined', function () {
         var fn = parse('aKey');
         expect(fn()).toBeUndefined();
     });
 
-    it('will parse this', function() {
+    it('will parse this', function () {
         var fn = parse('this');
         var scope = {};
         expect(fn(scope)).toBe(scope);
         expect(fn()).toBeUndefined();
     });
 
-    it('looks up a 2-part identifier path from the scope', function() {
+    it('looks up a 2-part identifier path from the scope', function () {
         var fn = parse('aKey.anotherKey');
         expect(fn({aKey: {anotherKey: 42}})).toBe(42);
         expect(fn({aKey: {}})).toBeUndefined();
         expect(fn({})).toBeUndefined();
     });
 
-    it('looks up a member from an object', function() {
+    it('looks up a member from an object', function () {
         var fn = parse('{aKey: 42}.aKey');
         expect(fn()).toBe(42);
     });
 
-    it('looks up a 4-part identifier path from the scope', function() {
+    it('looks up a 4-part identifier path from the scope', function () {
         var fn = parse('aKey.secondKey.thirdKey.fourthKey');
         expect(fn({aKey: {secondKey: {thirdKey: {fourthKey: 42}}}})).toBe(42);
         expect(fn({aKey: {secondKey: {thirdKey: {}}}})).toBeUndefined();
@@ -175,84 +178,100 @@ describe("parse", function () {
         expect(fn()).toBeUndefined();
     });
 
-    it('uses locals instead of scope when there is a matching key', function() {
+    it('uses locals instead of scope when there is a matching key', function () {
         var fn = parse('aKey');
-        var scope  = {aKey: 42};
+        var scope = {aKey: 42};
         var locals = {aKey: 43};
         expect(fn(scope, locals)).toBe(43);
     });
 
-    it('does not use locals instead of scope when no matching key', function() {
+    it('does not use locals instead of scope when no matching key', function () {
         var fn = parse('aKey');
-        var scope  = {aKey: 42};
+        var scope = {aKey: 42};
         var locals = {otherKey: 43};
         expect(fn(scope, locals)).toBe(42);
     });
 
-    it('uses locals instead of scope when the first part matches', function() {
+    it('uses locals instead of scope when the first part matches', function () {
         var fn = parse('aKey.anotherKey');
-        var scope  = {aKey: {anotherKey: 42}};
+        var scope = {aKey: {anotherKey: 42}};
         var locals = {aKey: {}};
         expect(fn(scope, locals)).toBeUndefined();
     });
 
-    it('parses a simple computed property access', function() {
+    it('parses a simple computed property access', function () {
         var fn = parse('aKey["anotherKey"]');
         expect(fn({aKey: {anotherKey: 42}})).toBe(42);
     });
 
-    it('parses a computed numeric array access', function() {
+    it('parses a computed numeric array access', function () {
         var fn = parse('anArray[1]');
         //expect(fn({anArray: [1, 2, 3]})).toBe(2);
     });
 
-    it('parses a computed access with another key as property', function() {
+    it('parses a computed access with another key as property', function () {
         var fn = parse('lock[key]');
         expect(fn({key: 'theKey', lock: {theKey: 42}})).toBe(42);
     });
 
-    it('parses computed access with another access as property', function() {
+    it('parses computed access with another access as property', function () {
         var fn = parse('lock[keys["aKey"]]');
-        expect(fn({keys: {aKey: 'theKey'},  lock: {theKey: 42}})).toBe(42);
+        expect(fn({keys: {aKey: 'theKey'}, lock: {theKey: 42}})).toBe(42);
     });
 
-    it('parses a function call', function() {
+    it('parses a function call', function () {
         var fn = parse('aFunction()');
-        expect(fn({aFunction: function() { return 42; }})).toBe(42);
-    });
-
-    it('parses a function call with a single number argument', function() {
-        var fn = parse('aFunction(42)');
-        expect(fn({aFunction: function(n) { return n; }})).toBe(42);
-    });
-
-    it('parses a function call with a single identifier argument', function() {
-        var fn = parse('aFunction(n)');
-        expect(fn({n: 42, aFunction: function(arg) { return arg; }})).toBe(42);
-    });
-
-    it('parses a function call with a single function call argument', function() {
-        var fn = parse('aFunction(argFn())');
         expect(fn({
-            argFn: _.constant(42),
-            aFunction: function(arg) { return arg; }
+            aFunction: function () {
+                return 42;
+            }
         })).toBe(42);
     });
 
-    it('parses a function call with multiple arguments', function() {
+    it('parses a function call with a single number argument', function () {
+        var fn = parse('aFunction(42)');
+        expect(fn({
+            aFunction: function (n) {
+                return n;
+            }
+        })).toBe(42);
+    });
+
+    it('parses a function call with a single identifier argument', function () {
+        var fn = parse('aFunction(n)');
+        expect(fn({
+            n: 42, aFunction: function (arg) {
+                return arg;
+            }
+        })).toBe(42);
+    });
+
+    it('parses a function call with a single function call argument', function () {
+        var fn = parse('aFunction(argFn())');
+        expect(fn({
+            argFn: _.constant(42),
+            aFunction: function (arg) {
+                return arg;
+            }
+        })).toBe(42);
+    });
+
+    it('parses a function call with multiple arguments', function () {
         var fn = parse('aFunction(37, n, argFn())');
         expect(fn({
             n: 3,
             argFn: _.constant(2),
-            aFunction: function(a1, a2, a3) { return a1 + a2 + a3; }
+            aFunction: function (a1, a2, a3) {
+                return a1 + a2 + a3;
+            }
         })).toBe(42);
     });
 
-    it('calls methods accessed as computed properties', function() {
+    it('calls methods accessed as computed properties', function () {
         var scope = {
             anObject: {
                 aMember: 42,
-                aFunction: function() {
+                aFunction: function () {
                     return this.aMember;
                 }
             }
@@ -261,11 +280,11 @@ describe("parse", function () {
         expect(fn(scope)).toBe(42);
     });
 
-    it('calls methods accessed as non-computed properties', function() {
+    it('calls methods accessed as non-computed properties', function () {
         var scope = {
             anObject: {
                 aMember: 42,
-                aFunction: function() {
+                aFunction: function () {
                     return this.aMember;
                 }
             }
@@ -274,9 +293,9 @@ describe("parse", function () {
         expect(fn(scope)).toBe(42);
     });
 
-    it('binds bare functions to the scope', function() {
+    it('binds bare functions to the scope', function () {
         var scope = {
-            aFunction: function() {
+            aFunction: function () {
                 return this;
             }
         };
@@ -284,10 +303,10 @@ describe("parse", function () {
         expect(fn(scope)).toBe(scope);
     });
 
-    it('binds bare functions on locals to the locals', function() {
+    it('binds bare functions on locals to the locals', function () {
         var scope = {};
         var locals = {
-            aFunction: function() {
+            aFunction: function () {
                 return this;
             }
         };
@@ -295,87 +314,96 @@ describe("parse", function () {
         expect(fn(scope, locals)).toBe(locals);
     });
 
-    it('parses a simple attribute assignment', function() {
+    it('parses a simple attribute assignment', function () {
         var fn = parse('anAttribute = 42');
         var scope = {};
         fn(scope);
         expect(scope.anAttribute).toBe(42);
     });
 
-    it('can assign any primary expression', function() {
+    it('can assign any primary expression', function () {
         var fn = parse('anAttribute = aFunction()');
         var scope = {aFunction: _.constant(42)};
         fn(scope);
         expect(scope.anAttribute).toBe(42);
     });
 
-    it('can assign a computed object property', function() {
+    it('can assign a computed object property', function () {
         var fn = parse('anObject["anAttribute"] = 42');
         var scope = {anObject: {}};
         fn(scope);
         expect(scope.anObject.anAttribute).toBe(42);
     });
 
-    it('can assign a non-computed object property', function() {
+    it('can assign a non-computed object property', function () {
         var fn = parse('anObject.anAttribute = 42');
         var scope = {anObject: {}};
         fn(scope);
         expect(scope.anObject.anAttribute).toBe(42);
     });
 
-    it('can assign a nested object property', function() {
+    it('can assign a nested object property', function () {
         var fn = parse('anArray[0].anAttribute = 42');
         var scope = {anArray: [{}]};
         fn(scope);
         expect(scope.anArray[0].anAttribute).toBe(42);
     });
 
-    it('creates the objects in the assignment path that do not exist', function() {
+    it('creates the objects in the assignment path that do not exist', function () {
         var fn = parse('some["nested"].property.path = 42');
         var scope = {};
         fn(scope);
         expect(scope.some.nested.property.path).toBe(42);
     });
 
-    it('does not allow calling the function constructor', function() {
-        expect(function() {
+    it('does not allow calling the function constructor', function () {
+        expect(function () {
             var fn = parse('aFunction.constructor("return window;")()');
-            fn({aFunction: function() { }});
+            fn({
+                aFunction: function () {
+                }
+            });
         }).toThrow();
     });
 
-    it('does not allow accessing __proto__', function() {
-        expect(function() {
+    it('does not allow accessing __proto__', function () {
+        expect(function () {
             var fn = parse('obj.__proto__');
-            fn({obj: { }});
+            fn({obj: {}});
         }).toThrow();
     });
 
-    it('does not allow calling __defineGetter__', function() {
-        expect(function() {
+    it('does not allow calling __defineGetter__', function () {
+        expect(function () {
             var fn = parse('obj.__defineGetter__("evil", fn)');
-            fn({obj: { }, fn: function() { }});
+            fn({
+                obj: {}, fn: function () {
+                }
+            });
         }).toThrow();
     });
 
-    it('does not allow calling __defineSetter__', function() {
-        expect(function() {
+    it('does not allow calling __defineSetter__', function () {
+        expect(function () {
             var fn = parse('obj.__defineSetter__("evil", fn)');
-            fn({obj: { }, fn: function() { }});
+            fn({
+                obj: {}, fn: function () {
+                }
+            });
         }).toThrow();
     });
 
-    it('does not allow calling __lookupGetter__', function() {
-        expect(function() {
+    it('does not allow calling __lookupGetter__', function () {
+        expect(function () {
             var fn = parse('obj.__lookupGetter__("evil")');
-            fn({obj: { }});
+            fn({obj: {}});
         }).toThrow();
     });
 
-    it('does not allow calling __lookupSetter__', function() {
-        expect(function() {
+    it('does not allow calling __lookupSetter__', function () {
+        expect(function () {
             var fn = parse('obj.__lookupSetter__("evil")');
-            fn({obj: { }});
+            fn({obj: {}});
         }).toThrow();
     });
 
@@ -629,193 +657,204 @@ describe("parse", function () {
     //    expect(parse('a = 1; b = 2; a + b')({})).toBe(3);
     //});
     //
-    it('can parse filter expressions', function() {
-        register('upcase', function() {
-            return function(str) {
-                return str.toUpperCase();
-            };
-        });
+    it('can parse filter expressions', function () {
+        parse = createInjector(['ng', function ($filterProvider) {
+            $filterProvider.register('upcase', function () {
+                return function (str) {
+                    return str.toUpperCase();
+                };
+            });
+        }]).get('$parse');
         var fn = parse('aString | upcase');
         expect(fn({aString: 'Hello'})).toEqual('HELLO');
     });
 
-    it('can parse filter chain expressions', function() {
-        register('upcase', function() {
-            return function(s) {
-                return s.toUpperCase();
-            };
-        });
-        register('exclamate', function() {
-            return function(s) {
-                return s + '!';
-            };
-        });
+    it('can parse filter chain expressions', function () {
+        parse = createInjector(['ng', function ($filterProvider) {
+            $filterProvider.register('upcase', function () {
+                return function (s) {
+                    return s.toUpperCase();
+                };
+            });
+            $filterProvider.register('exclamate', function () {
+                return function (s) {
+                    return s + '!';
+                };
+            });
+        }]).get('$parse');
         var fn = parse('"hello" | upcase | exclamate');
         expect(fn()).toEqual('HELLO!');
     });
 
-    it('can pass an additional argument to filters', function() {
-        register('repeat', function() {
-            return function(s, times) {
-                return _.repeat(s, times);
-            };
-        });
+    it('can pass an additional argument to filters', function () {
+        parse = createInjector(['ng', function ($filterProvider) {
+            $filterProvider.register('repeat', function () {
+                return function (s, times) {
+                    return _.repeat(s, times);
+                };
+            });
+        }]).get('$parse');
         var fn = parse('"hello" | repeat:3');
         expect(fn()).toEqual('hellohellohello');
     });
 
-    it('can pass several additional arguments to filters', function() {
-        register('surround', function() {
-            return function(s, left, right) {
-                return left + s + right;
-            };
-        });
+    it('can pass several additional arguments to filters', function () {
+        parse = createInjector(['ng', function ($filterProvider) {
+            $filterProvider.register('surround', function () {
+                return function (s, left, right) {
+                    return left + s + right;
+                };
+            });
+        }]).get('$parse');
         var fn = parse('"hello" | surround:"*":"!"');
         expect(fn()).toEqual('*hello!');
     });
 
-    it('can combine filters', function() {
-        register('surround', function() {
-            return function(s, left, right) {
-                return left + s + right;
-            };
-        });
-        register('upcase', function() {
-            return function(s) {
-                return s.toUpperCase();
-            };
-        });
-        var fn = parse('"hello" | surround:("a" | upcase):"!"');
-        expect(fn()).toEqual('Ahello!');
-    });
+    //it('can combine filters', function () {
+    //    register('surround', function () {
+    //        return function (s, left, right) {
+    //            return left + s + right;
+    //        };
+    //    });
+    //    register('upcase', function () {
+    //        return function (s) {
+    //            return s.toUpperCase();
+    //        };
+    //    });
+    //    var fn = parse('"hello" | surround:("a" | upcase):"!"');
+    //    expect(fn()).toEqual('Ahello!');
+    //});
 
 
-    it('returns the function itself when given one', function() {
-        var fn = function() { };
+    it('returns the function itself when given one', function () {
+        var fn = function () {
+        };
         expect(parse(fn)).toBe(fn);
     });
 
-    it('still returns a function when given no argument', function() {
+    it('still returns a function when given no argument', function () {
         expect(parse()).toEqual(jasmine.any(Function));
     });
 
-    it('marks integers literal', function() {
+    it('marks integers literal', function () {
         var fn = parse('42');
         expect(fn.literal).toBe(true);
     });
 
-    it('marks strings literal', function() {
+    it('marks strings literal', function () {
         var fn = parse('"abc"');
         expect(fn.literal).toBe(true);
     });
 
-    it('marks booleans literal', function() {
+    it('marks booleans literal', function () {
         var fn = parse('true');
         expect(fn.literal).toBe(true);
     });
 
-    it('marks arrays literal', function() {
+    it('marks arrays literal', function () {
         var fn = parse('[1, 2, aVariable]');
         expect(fn.literal).toBe(true);
     });
 
-    it('marks objects literal', function() {
+    it('marks objects literal', function () {
         var fn = parse('{a: 1, b: aVariable}');
         expect(fn.literal).toBe(true);
     });
 
-    it('marks unary expressions non-literal', function() {
+    it('marks unary expressions non-literal', function () {
         var fn = parse('!false');
         expect(fn.literal).toBe(false);
     });
 
-    it('marks binary expressions non-literal', function() {
+    it('marks binary expressions non-literal', function () {
         var fn = parse('1 + 2');
         expect(fn.literal).toBe(false);
     });
 
-    it('marks integers constant', function() {
+    it('marks integers constant', function () {
         var fn = parse('42');
         expect(fn.constant).toBe(true);
     });
 
-    it('marks strings constant', function() {
+    it('marks strings constant', function () {
         var fn = parse('"abc"');
         expect(fn.constant).toBe(true);
     });
 
-    it('marks booleans constant', function() {
+    it('marks booleans constant', function () {
         var fn = parse('true');
         expect(fn.constant).toBe(true);
     });
 
-    it('marks booleans literal', function() {
+    it('marks booleans literal', function () {
         var fn = parse('true');
         expect(fn.constant).toBe(true);
     });
 
-    it('marks identifiers non-constant', function() {
+    it('marks identifiers non-constant', function () {
         var fn = parse('a');
         expect(fn.constant).toBe(false);
     });
 
-    it('marks arrays constant when elements are constant', function() {
+    it('marks arrays constant when elements are constant', function () {
         expect(parse('[1, 2, 3]').constant).toBe(true);
         expect(parse('[1, [2, [3]]]').constant).toBe(true);
         expect(parse('[1, 2, a]').constant).toBe(false);
         expect(parse('[1, [2, [a]]]').constant).toBe(false);
     });
 
-    it('marks objects constant when values are constant', function() {
+    it('marks objects constant when values are constant', function () {
         expect(parse('{a: 1, b: 2}').constant).toBe(true);
         expect(parse('{a: 1, b: {c: 3}}').constant).toBe(true);
         expect(parse('{a: 1, b: something}').constant).toBe(false);
         expect(parse('{a: 1, b: {c: something}}').constant).toBe(false);
     });
 
-    it('marks this as non-constant', function() {
+    it('marks this as non-constant', function () {
         expect(parse('this').constant).toBe(false);
     });
 
-    it('marks non-computed lookup constant when object is constant', function() {
+    it('marks non-computed lookup constant when object is constant', function () {
         expect(parse('{a: 1}.a').constant).toBe(true);
         expect(parse('obj.a').constant).toBe(false);
     });
 
-    it('marks computed lookup constant when object and key are', function() {
+    it('marks computed lookup constant when object and key are', function () {
         expect(parse('{a: 1}["a"]').constant).toBe(true);
         expect(parse('obj["a"]').constant).toBe(false);
         expect(parse('{a: 1}[something]').constant).toBe(false);
         expect(parse('obj[something]').constant).toBe(false);
     });
 
-    it('marks function calls non-constant', function() {
+    it('marks function calls non-constant', function () {
         expect(parse('aFunction()').constant).toBe(false);
     });
 
-    it('marks filters constant if arguments are', function() {
-        register('aFilter', function() {
-            return _.identity;
-        });
+    it('marks filters constant if arguments are', function () {
+        parse = createInjector(['ng', function ($filterProvider) {
+            $filterProvider.register('aFilter', function () {
+                return _.identity;
+            });
+        }]).get('$parse');
         expect(parse('[1, 2, 3] | aFilter').constant).toBe(true);
         expect(parse('[1, 2, a] | aFilter').constant).toBe(false);
         expect(parse('[1, 2, 3] | aFilter:42').constant).toBe(true);
         expect(parse('[1, 2, 3] | aFilter:a').constant).toBe(false);
     });
 
-    it('marks assignments constant when both sides are', function() {
+    it('marks assignments constant when both sides are', function () {
         expect(parse('1 = 2').constant).toBe(true);
         expect(parse('a = 2').constant).toBe(false);
         expect(parse('1 = b').constant).toBe(false);
         expect(parse('a = b').constant).toBe(false);
     });
 
-    it('marks unaries constant when arguments are constant', function() {
+    it('marks unaries constant when arguments are constant', function () {
         expect(parse('+42').constant).toBe(true);
         expect(parse('+a').constant).toBe(false);
     });
 
-    it('marks binaries constant when both arguments are constant', function() {
+    it('marks binaries constant when both arguments are constant', function () {
         expect(parse('1 + 2').constant).toBe(true);
         expect(parse('1 + 2').literal).toBe(false);
         expect(parse('1 + a').constant).toBe(false);
@@ -823,7 +862,7 @@ describe("parse", function () {
         expect(parse('a + a').constant).toBe(false);
     });
 
-    it('marks logicals constant when both arguments are constant', function() {
+    it('marks logicals constant when both arguments are constant', function () {
         expect(parse('true && false').constant).toBe(true);
         expect(parse('true && false').literal).toBe(false);
         expect(parse('true && a').constant).toBe(false);
@@ -831,7 +870,7 @@ describe("parse", function () {
         expect(parse('a && b').constant).toBe(false);
     });
 
-    it('marks ternaries constant when all arguments are', function() {
+    it('marks ternaries constant when all arguments are', function () {
         expect(parse('true ? 1 : 2').constant).toBe(true);
         expect(parse('a ? 1 : 2').constant).toBe(false);
         expect(parse('true ? a : 2').constant).toBe(false);
@@ -839,7 +878,7 @@ describe("parse", function () {
         expect(parse('a ? b : c').constant).toBe(false);
     });
 
-    it('allows calling assign on identifier expressions', function() {
+    it('allows calling assign on identifier expressions', function () {
         var fn = parse('anAttribute');
         expect(fn.assign).toBeDefined();
 
@@ -848,7 +887,7 @@ describe("parse", function () {
         expect(scope.anAttribute).toBe(42);
     });
 
-    it('allows calling assign on member expressions', function() {
+    it('allows calling assign on member expressions', function () {
         var fn = parse('anObject.anAttribute');
         expect(fn.assign).toBeDefined();
 

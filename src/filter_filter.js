@@ -51,6 +51,3 @@ function deepCompare(actual, expected, comparator) {
         return comparator(actual, expected);
     }
 }
-
-
-register('filter', filterFilter);

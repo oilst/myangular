@@ -44,6 +44,16 @@ function createInjector(modulesToLoad, strictDi) {
         }
     }
 
+    function enforceReturnValue(factoryFn) {
+        return function () {
+            var value = instanceInjector.invoke(factoryFn);
+            if (_.isUndefined(value)) {
+                throw 'factory must return a value';
+            }
+            return value;
+        };
+    }
+
     providerCache.$provide = {
         constant: function (key, value) {
             if (key === 'hasOwnProperty') {
@@ -57,6 +67,29 @@ function createInjector(modulesToLoad, strictDi) {
                 provider = providerInjector.instantiate(provider);
             }
             providerCache[key + 'Provider'] = provider;
+        },
+        factory: function (key, factoryFn, enforce) {
+            this.provider(key, {
+                $get: enforce === false ? factoryFn : enforceReturnValue(factoryFn)
+            });
+        },
+        value: function (key, value) {
+            this.factory(key, _.constant(value), false);
+        },
+        service: function (key, Constructor) {
+            this.factory(key, function () {
+                return instanceInjector.instantiate(Constructor);
+            });
+        },
+        decorator: function (serviceName, decoratorFn) {
+            var provider = providerInjector.get(serviceName + 'Provider');
+            var original$get = provider.$get;
+            provider.$get = function () {
+                var instance = instanceInjector.invoke(original$get, provider);
+                instanceInjector.invoke(decoratorFn, null, {$delegate: instance});
+                return instance;
+            };
+
         }
     };
 
