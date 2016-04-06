@@ -19,6 +19,9 @@
 - *finally* does not change the promise. if finally is called on a rejected promise it returns a rejected promise with the same value. If finally returns a promise, then its callbacks wait till the promise is resolved or rejected, but they still get the value of the input promise. The only exception is, when the promise returned by finally is rejected, then the next handlers get a rejected promise.
 
 
+##Additional 
+- *Notify* there is a third handler, the notify handler. The advantage of this is that it can be called several times. 
+
 
 
 
