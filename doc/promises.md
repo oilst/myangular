@@ -9,6 +9,9 @@
 - *Deferred*: the computation that makes a promised value available. Usually used by the producer. The value of the promise becomes available if the producer calls `resolve()` or `reject()` on the deferred. (ES6 has no deferred)
 - *Promise*: a promise that some value will be available in the future. Usually used by the consumer. The promise is retrived by calling `promise()` on the deferred. When the deferred becomes resolved or rejected, one of the call backs provided by `then()` is called.
 - *promise.catch(action)*: just syntactic sugar for `promise.then(null, action)`
+- *q.reject(reason)*: returns a promise that is immediately rejected. 
+- *q.when()*: wraps anything into a promise. One way to see it is as the oponent of 'q.reject'. It can also be used to convert thenable objects into angular promises. 
+- *q.all()* takes a collection of promises and values. If all promises resolve it returns a promise that contains a collection of same type that contains the results. If at least one of them rejects, it returns a rejected promise that contains the results. 
 
 ##Interesting Facts
 - Promises are not resolved immediately when resolve is called, but only in the next diggest cycle. In other promise libraries this is achived by timeout. The drawback is that by this they give controll back to the browser, while in angular an immediately resolved promise can be worked on in the same diggest loop. 

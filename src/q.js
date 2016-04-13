@@ -47,7 +47,7 @@ function $QProvider() {
             return this.then(null, onRejected);
         };
 
-        Promise.prototype.finally = function(callback, progressBack) {
+        Promise.prototype.finally = function (callback, progressBack) {
             return this.then(function (value) {
                 return handleFinallyCallback(callback, value, true);
             }, function (rejection) {
@@ -128,8 +128,46 @@ function $QProvider() {
             return new Deferred();
         }
 
+        function reject(rejection) {
+            var d = defer();
+            d.reject(rejection);
+            return d.promise;
+        }
+
+        function when(value, callback, errback, progressback) {
+            var d = defer();
+            d.resolve(value);
+            return d.promise.then(callback, errback, progressback);
+        }
+
+        function all(promises) {
+            var results = _.isArray(promises) ? [] : {};
+            var counter = 0;
+            var d = defer();
+            _.forEach(promises, function (promise, index) {
+                counter++;
+                when(promise).then(function (value) {
+                    results[index] = value;
+                    counter--;
+                    if (!counter) {
+                        d.resolve(results);
+                    }
+                }, function (rejection) {
+                    d.reject(rejection);
+                });
+            });
+            if (!counter) {
+                d.resolve(results);
+            }
+            return d.promise;
+        }
+
         return {
-            defer: defer
+            defer: defer,
+            reject: reject,
+            when: when,
+            resolve: when,
+            all: all
         };
     }];
 }
