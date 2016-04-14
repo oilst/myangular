@@ -18,7 +18,7 @@
                        
                        })(); // <-- and this
                         ```
-                        
+- *Hoisting*: Variable and function declarations (not the assignments!) are moved to the top of their scope. Multiple variable declarations are ignored. Multiple function declarations overwrite each others. Function declarations have priority over variable declarations.                        
 
 
 
