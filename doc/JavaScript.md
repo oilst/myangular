@@ -10,20 +10,107 @@
 - *Strict mode*: If we use strict mode, then undefined variables are not created but we get a ReferenceError.
 - *let in ES6*: with let we can initialize variables that only exist inside there block. 
 - *function as scopes*:
-                        ```javascript
+                        
+                        
                        (function foo(){ // <-- insert this
-                       
                            var a = 3;
                            console.log( a ); // 3
-                       
                        })(); // <-- and this
-                        ```
-- *Hoisting*: Variable and function declarations (not the assignments!) are moved to the top of their scope. Multiple variable declarations are ignored. Multiple function declarations overwrite each others. Function declarations have priority over variable declarations.                        
+
+                        
+##Scopes
+Variable and function declarations (not the assignments!) are moved to the top of their scope. Multiple variable declarations are ignored. Multiple function declarations overwrite each others. Function declarations have priority over variable declarations.   
+                     
+##Closure
+If you defined a function from outside, its scope (and parent scopes) are preserved as long as you maintain the reference. Whenever it is called, it is called with the scopes. We say it has closure over its parent scopes. 
+
+Example:
+
+    function foo() {
+        var a = 2;
+    
+        function bar() {
+            console.log( a );
+        }
+    
+        return bar;
+    }
+    var baz = foo();
+    baz(); // 2 -- Whoa, closure was just observed, man.
+
+This only works because of closure:
+
+```javascript    
+    
+    function wait(message) {
+    
+        setTimeout( function timer(){
+            console.log( message );
+        }, 1000 );
+    
+    }
+    wait( "Hello, closure!" );
+```
+
+This returns five times the integer 6:
+```javascript
+
+    for (var i=1; i<=5; i++) {
+        setTimeout( function timer(){
+            console.log( i );
+        }, i*1000 );
+    }
+ ```
+ But with closure we can fix it to work as expected:
+
+```javascript
+ 
+     for (var i=1; i<=5; i++) {
+         (function(j){
+             setTimeout( function timer(){
+                 console.log( j );
+             }, j*1000 );
+         })( i );
+     }
+  ```
+
+'let' has some special features in loops. If you use it in a for loop it will generate a function scope for each iteration. 
+
+##Module Pattern
+The module pattern is a pure example of closure. It doesn't need any additional language support: 
+```javascript
+
+    function CoolModule() {
+        var something = "cool";
+        var another = [1, 2, 3];
+    
+        function doSomething() {
+            console.log( something );
+        }
+    
+        function doAnother() {
+            console.log( another.join( " ! " ) );
+        }
+    
+        return {
+            doSomething: doSomething,
+            doAnother: doAnother
+        };
+    }
+
+    var foo = CoolModule();
+    
+    foo.doSomething(); // cool
+    foo.doAnother(); // 1 ! 2 ! 3
+ ```
 
 
 
 
-
+ Todo: 
+ -singleton pattern
+ -prototypes
+ 
  
 
 
