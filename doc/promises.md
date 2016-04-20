@@ -20,14 +20,35 @@
 - *Exception handling* when a callback crashes, it returns a rejected promise with the exception value
 - *propagation* if we resolve with a promise or return a promise from a callback, the nested promises are propagated. The resolve of the top most promise registers its resolve and reject to the lower promise so it gets only resolved if the lower promise is resolved. **This does not work for rejecting promises.** 
 - *finally* does not change the promise. if finally is called on a rejected promise it returns a rejected promise with the same value. If finally returns a promise, then its callbacks wait till the promise is resolved or rejected, but they still get the value of the input promise. The only exception is, when the promise returned by finally is rejected, then the next handlers get a rejected promise.
-
+- *$$q*: there is also a promise implementation based on $timeout instead of digest. 
 
 ##Additional 
 - *Notify* there is a third handler, the notify handler. The advantage of this is that it can be called several times. 
 
 
-
-
+##ES 6 Style
+There are no defereds in ES6 promises. 
+```
+    var deferred = Q.defer(); doAsyncStuff(function(err) {
+    if (err) { deferred.reject(err);
+    } else {
+        deferred.resolve();
+      }
+    });
+    return deferred.promise;
+```
+is replaced by
+```
+    return new Promise(function(resolve, reject) { 
+        doAsyncStuff(function(err) {
+            if (err) { 
+                reject(err);
+            } else {
+                resolve(); 
+            }
+        }); 
+    });
+```
  
 
 
