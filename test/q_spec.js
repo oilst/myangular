@@ -438,112 +438,6 @@ describe("$q", function () {
         expect(rejectedSpy).toHaveBeenCalledWith('fail');
     });
 
-    it('can report progress', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        d.promise.then(null, null, progressSpy);
-        d.notify('working...');
-        $rootScope.$apply();
-        expect(progressSpy).toHaveBeenCalledWith('working...');
-    });
-
-    it('can report progress many times', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        d.promise.then(null, null, progressSpy);
-        d.notify('40%');
-        $rootScope.$apply();
-        d.notify('80%');
-        d.notify('100%');
-        $rootScope.$apply();
-        expect(progressSpy.calls.count()).toBe(3);
-    });
-
-    it('does not notify progress after being resolved', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        d.promise.then(null, null, progressSpy);
-        d.resolve('ok');
-        d.notify('working...');
-        $rootScope.$apply();
-        expect(progressSpy).not.toHaveBeenCalled();
-    });
-
-    it('does not notify progress after being rejected', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        d.promise.then(null, null, progressSpy);
-        d.reject('fail');
-        d.notify('working...');
-        $rootScope.$apply();
-        expect(progressSpy).not.toHaveBeenCalled();
-    });
-
-    it('can notify progress through chain', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        d.promise
-            .then(_.noop)
-            .catch(_.noop)
-            .then(null, null, progressSpy);
-        d.notify('working...');
-        $rootScope.$apply();
-        expect(progressSpy).toHaveBeenCalledWith('working...');
-    });
-
-    it('transforms progress through handlers', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        d.promise
-            .then(_.noop)
-            .then(null, null, function (progress) {
-                return '***' + progress + '***';
-            })
-            .catch(_.noop)
-            .then(null, null, progressSpy);
-        d.notify('working...');
-        $rootScope.$apply();
-        expect(progressSpy).toHaveBeenCalledWith('***working...***');
-    });
-
-    it('recovers from progressback exceptions', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        var fulfilledSpy = jasmine.createSpy();
-        d.promise.then(null, null, function (progress) {
-            throw 'fail';
-        });
-        d.promise.then(fulfilledSpy, null, progressSpy);
-        d.notify('working...');
-        d.resolve('ok');
-        $rootScope.$apply();
-        expect(progressSpy).toHaveBeenCalledWith('working...');
-        expect(fulfilledSpy).toHaveBeenCalledWith('ok');
-    });
-
-    it('can notify progress through promise returned from handler', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        d.promise.then(null, null, progressSpy);
-        var d2 = $q.defer();
-        // Resolve original with nested promise
-        d.resolve(d2.promise);
-        // Notify on the nested promise
-        d2.notify('working...');
-        $rootScope.$apply();
-        expect(progressSpy).toHaveBeenCalledWith('working...')
-        ;
-    });
-
-    it('allows attaching progressback in finally', function () {
-        var d = $q.defer();
-        var progressSpy = jasmine.createSpy();
-        d.promise.finally(null, progressSpy);
-        d.notify('working...');
-        $rootScope.$apply();
-        expect(progressSpy).toHaveBeenCalledWith('working...');
-    });
-
     it('can make an immediately rejected promise', function () {
         var fulfilledSpy = jasmine.createSpy();
         var rejectedSpy = jasmine.createSpy();
@@ -583,20 +477,16 @@ describe("$q", function () {
     it('takes callbacks directly when wrapping', function () {
         var fulfilledSpy = jasmine.createSpy();
         var rejectedSpy = jasmine.createSpy();
-        var progressSpy = jasmine.createSpy();
         var wrapped = $q.defer();
         $q.when(
             wrapped.promise,
             fulfilledSpy,
-            rejectedSpy,
-            progressSpy
+            rejectedSpy
         );
-        wrapped.notify('working...');
         wrapped.resolve('ok');
         $rootScope.$apply();
         expect(fulfilledSpy).toHaveBeenCalledWith('ok');
         expect(rejectedSpy).not.toHaveBeenCalled();
-        expect(progressSpy).toHaveBeenCalledWith('working...');
     });
 
     it('makes an immediately resolved promise with resolve', function () {
@@ -607,96 +497,6 @@ describe("$q", function () {
         $rootScope.$apply();
         expect(fulfilledSpy).toHaveBeenCalledWith('ok');
         expect(rejectedSpy).not.toHaveBeenCalled();
-    });
-
-    describe('all', function () {
-        it('can resolve an array of promises to array of results', function () {
-            var promise = $q.all([$q.when(1), $q.when(2), $q.when(3)]);
-            var fulfilledSpy = jasmine.createSpy();
-            promise.then(fulfilledSpy);
-            $rootScope.$apply();
-            expect(fulfilledSpy).toHaveBeenCalledWith([1, 2, 3]);
-        });
-
-        it('can resolve an object of promises to an object of results', function () {
-            var promise = $q.all({a: $q.when(1), b: $q.when(2)});
-            var fulfilledSpy = jasmine.createSpy();
-            promise.then(fulfilledSpy);
-            $rootScope.$apply();
-            expect(fulfilledSpy).toHaveBeenCalledWith({a: 1, b: 2});
-        });
-
-        it('resolves an empty array of promises immediately', function () {
-            var promise = $q.all([]);
-            var fulfilledSpy = jasmine.createSpy();
-            promise.then(fulfilledSpy);
-            $rootScope.$apply();
-            expect(fulfilledSpy).toHaveBeenCalledWith([]);
-        });
-
-        it('resolves an empty object of promises immediately', function () {
-            var promise = $q.all({});
-            var fulfilledSpy = jasmine.createSpy();
-            promise.then(fulfilledSpy);
-            $rootScope.$apply();
-            expect(fulfilledSpy).toHaveBeenCalledWith({});
-        });
-
-        it('rejects when any of the promises rejects', function () {
-            var promise = $q.all([$q.when(1), $q.when(2), $q.reject('fail')]);
-            var fulfilledSpy = jasmine.createSpy();
-            var rejectedSpy = jasmine.createSpy();
-            promise.then(fulfilledSpy, rejectedSpy);
-            $rootScope.$apply();
-            expect(fulfilledSpy).not.toHaveBeenCalled();
-            expect(rejectedSpy).toHaveBeenCalledWith('fail');
-        });
-
-        it('wraps non-promises in the input collection', function () {
-            var promise = $q.all([$q.when(1), 2, 3]);
-            var fulfilledSpy = jasmine.createSpy();
-            promise.then(fulfilledSpy);
-            $rootScope.$apply();
-            expect(fulfilledSpy).toHaveBeenCalledWith([1, 2, 3]);
-        });
-
-    });
-
-    describe('ES6 style', function () {
-        it('is a function', function () {
-            expect($q instanceof Function).toBe(true);
-        });
-
-        it('expects a function as an argument', function () {
-            expect($q).toThrow();
-            $q(_.noop); // Just checking that this doesn t throw
-        });
-
-        it('returns a promise', function () {
-            expect($q(_.noop)).toBeDefined();
-            expect($q(_.noop).then).toBeDefined();
-        });
-
-        it('calls function with a resolve function', function () {
-            var fulfilledSpy = jasmine.createSpy();
-            $q(function (resolve) {
-                resolve('ok');
-            }).then(fulfilledSpy);
-            $rootScope.$apply();
-            expect(fulfilledSpy).toHaveBeenCalledWith('ok');
-        });
-
-        it('calls function with a reject function', function () {
-            var fulfilledSpy = jasmine.createSpy();
-            var rejectedSpy = jasmine.createSpy();
-            $q(function (resolve, reject) {
-                reject('fail');
-            }).then(fulfilledSpy, rejectedSpy);
-            $rootScope.$apply();
-            expect(fulfilledSpy).not.toHaveBeenCalled();
-            expect(rejectedSpy).toHaveBeenCalledWith('fail');
-        })
-
     });
 
 });
