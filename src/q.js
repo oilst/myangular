@@ -21,6 +21,7 @@ function $QProvider() {
                 } else {
                     this.promise.$$state.value = value;
                     this.promise.$$state.status = 1;
+                    // execute all registered success handler
                     scheduleProcessQueue(this.promise.$$state);
                 }
             }
@@ -30,6 +31,7 @@ function $QProvider() {
             if (!this.promise.$$state.status) {
                 this.promise.$$state.value = reason;
                 this.promise.$$state.status = 2;
+                // execute all registered reject handler
                 scheduleProcessQueue(this.promise.$$state);
             }
         };
@@ -44,11 +46,11 @@ function $QProvider() {
             this.$$state.pending = this.$$state.pending || [];
             this.$$state.pending.push([result, onFulfilled, onRejected]);
             if (this.$$state.status) {
+                // execute all newly added handlers
                 scheduleProcessQueue(this.$$state);
             }
             return result.promise;
         };
-
 
 
         function scheduleProcessQueue(state) {
@@ -92,24 +94,12 @@ function $QProvider() {
             var callbackValue = callback();
             if (callbackValue && callbackValue.then) {
                 return callbackValue.then(function () {
-                    return makePromise(value, resolved);
+                    return resolved ? when(value) : reject(value);
                 });
             } else {
-                return makePromise(value, resolved);
+                return resolved ? when(value) : reject(value);
             }
         }
-
-        function makePromise(value, resolved) {
-            var d = new Deferred();
-            if (resolved) {
-                d.resolve(value);
-            } else {
-                d.reject(value);
-            }
-            return d.promise;
-        }
-
-
 
 
         function reject(rejection) {
