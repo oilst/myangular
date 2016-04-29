@@ -114,12 +114,46 @@ function $QProvider() {
             return d.promise.then(callback, errback);
         }
 
+        function all(promises) {
+            var results = _.isArray(promises) ? [] : {};
+            var counter = 0;
+            var d = defer();
+            _.forEach(promises, function (promise, index) {
+                counter++;
+                when(promise).then(function (value) {
+                    results[index] = value;
+                    counter--;
+                    if (!counter) {
+                        d.resolve(results);
+                    }
+                }, function (rejection) {
+                    d.reject(rejection);
+                });
+            });
+            if (!counter) {
+                d.resolve(results);
+            }
+            return d.promise;
+        }
+
+        var $Q = function Q(resolver) {
+            if (!_.isFunction(resolver)) {
+                throw 'Expected function, got ' + resolver;
+            }
+
+            var d = defer();
+            resolver(_.bind(d.resolve, d),
+                _.bind(d.reject, d));
+            return d.promise;
+        };
+
 
         return {
             defer: defer,
             reject: reject,
             when: when,
-            resolve: when
+            resolve: when,
+            all: all
         };
     }];
 }
