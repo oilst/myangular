@@ -104,7 +104,37 @@ The module pattern is a pure example of closure. It doesn't need any additional 
     foo.doAnother(); // 1 ! 2 ! 3
  ```
 
+##this
+- this does not reference the function scope. 
+- depending on how the function has been called, the this reference points to a different object. 
+- call site: this is the default binding if func has been called `func()`. This points to the scope in which `func` has been called. Does not work if the function called runs in strict mode. In this case this is undefined. 
+- Implicit binding: If the functions has been called on an object `obj.func()`, then this is bound to `obj`. It does not work if you pass a function like `obj.func` as a callback. It only works if its called exactly like this: `obj.func()`.
 
+## Getter/Setter
+```javascript
+
+    var person = {
+        firstName: 'Jimmy',
+        lastName: 'Smith',
+        get fullName() {
+            return this.firstName + ' ' + this.lastName;
+        },
+        set fullName (name) {
+            var words = name.toString().split(' ');
+            this.firstName = words[0] || '';
+            this.lastName = words[1] || '';
+        }
+    }
+    
+    person.fullName = 'Jack Franklin';
+    console.log(person.firstName); // Jack
+    console.log(person.lastName) // Franklin
+```
+
+
+##Technologies to check
+- GraphQL: https://github.com/chentsulin/awesome-graphql
+- REdux: https://gist.github.com/btroncone/a6e4347326749f938510
 
 
  Todo: 
