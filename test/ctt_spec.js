@@ -53,11 +53,28 @@ describe("$q CTT", function () {
 
         d.reject(1);
         $rootScope.$apply();
-        expect(result).toBe(undefined);
+        expect(result).toBe(1);
 
         resolveNested();
         $rootScope.$apply();
-        expect(result).toBe(6);
+        expect(result).toBe(1);
+    });
+
+    it('promises can be chained', function () {
+        var d = $q.defer();
+        var result = 0;
+        d.promise.then(
+            function (value) {
+                return value + 1;
+            }
+        ).then (
+            function (value) {
+                result = value + 1;
+            }
+        );
+        d.resolve(1);
+        $rootScope.$apply();
+        expect(result).toBe(3);
     });
 
 
@@ -310,6 +327,17 @@ describe("$q CTT", function () {
         expect(rejectedSpy).toHaveBeenCalledWith('fail');
     });
 
+    it('reject calls handler immedialtely when value is a promise', function () {
+        var fulfilledSpy = jasmine.createSpy();
+        var rejectedSpy = jasmine.createSpy();
+        var p = $q.defer().promise;
+        var promise = $q.reject(p);
+        promise.then(fulfilledSpy, rejectedSpy);
+        $rootScope.$apply();
+        expect(fulfilledSpy).not.toHaveBeenCalled();
+        expect(rejectedSpy).toHaveBeenCalledWith(p);
+    });
+
     it('can make an immediately resolved promise', function () {
         var fulfilledSpy = jasmine.createSpy();
         var rejectedSpy = jasmine.createSpy();
@@ -345,6 +373,7 @@ describe("$q CTT", function () {
             fulfilledSpy,
             rejectedSpy
         );
+        expect(fulfilledSpy).not.toHaveBeenCalledWith('ok');
         wrapped.resolve('ok');
         $rootScope.$apply();
         expect(fulfilledSpy).toHaveBeenCalledWith('ok');
@@ -360,6 +389,7 @@ describe("$q CTT", function () {
         expect(fulfilledSpy).toHaveBeenCalledWith('ok');
         expect(rejectedSpy).not.toHaveBeenCalled();
     });
+
 
 });
 
